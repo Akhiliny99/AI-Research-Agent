@@ -1,6 +1,6 @@
 import re
 
-# ── Input guardrails ──────────────────────────────────────────
+
 BLOCKED_PATTERNS = [
     r"ignore (previous|all) instructions",
     r"you are now",
@@ -31,7 +31,7 @@ def check_input(query: str) -> tuple[bool, str]:
     return True, "OK"
 
 
-# ── Output guardrails ─────────────────────────────────────────
+
 HALLUCINATION_PHRASES = [
     "as of my knowledge cutoff",
     "i don't have access to real-time",
@@ -64,7 +64,7 @@ def check_output(answer: str, tool_used: str) -> tuple[str, list[str]]:
     return cleaned, warnings
 
 
-# ── Format final response for UI ──────────────────────────────
+
 def format_response(answer: str, sources: list[str], tool_used: str, warnings: list[str]) -> dict:
     """Package everything into a clean response object for the UI."""
     return {
@@ -73,4 +73,5 @@ def format_response(answer: str, sources: list[str], tool_used: str, warnings: l
         "tool_used": tool_used,
         "warnings": warnings,
         "has_warnings": len(warnings) > 0
+
     }
