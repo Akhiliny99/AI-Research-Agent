@@ -7,20 +7,20 @@ from langchain_core.messages import HumanMessage
 from agent.graph import research_agent
 from agent.guardrails import check_input, check_output, format_response
 
-# ── Page config ───────────────────────────────────────────────
+
 st.set_page_config(
     page_title="Research Agent",
     page_icon="🔍",
     layout="wide"
 )
 
-# ── Header ────────────────────────────────────────────────────
+
 st.title("🔍 AI Research Agent")
 st.caption("Powered by LangGraph · LLaMA 3.1 · Groq · Tavily · FAISS")
 
 st.markdown("---")
 
-# ── Sidebar ───────────────────────────────────────────────────
+
 with st.sidebar:
     st.header("⚙️ Settings")
 
@@ -56,14 +56,14 @@ with st.sidebar:
         st.session_state.messages = []
         st.rerun()
 
-# ── Session state ─────────────────────────────────────────────
+
 if "messages" not in st.session_state:
     st.session_state.messages = []
 
 if "chat_history" not in st.session_state:
     st.session_state.chat_history = []
 
-# ── Display chat history ──────────────────────────────────────
+
 for msg in st.session_state.messages:
     with st.chat_message(msg["role"]):
         st.markdown(msg["content"])
@@ -98,22 +98,22 @@ for msg in st.session_state.messages:
                     for url in sources:
                         st.markdown(f"- {url}")
 
-# ── Chat input ────────────────────────────────────────────────
+
 if query := st.chat_input("Ask me anything..."):
 
-    # Input guardrail
+   
     is_safe, reason = check_input(query)
     if not is_safe:
         with st.chat_message("assistant"):
             st.error(f"❌ {reason}")
         st.stop()
 
-    # Show user message
+   
     st.session_state.messages.append({"role": "user", "content": query})
     with st.chat_message("user"):
         st.markdown(query)
 
-    # Run agent
+    
     with st.chat_message("assistant"):
         with st.spinner("Thinking..."):
             try:
@@ -132,14 +132,14 @@ if query := st.chat_input("Ask me anything..."):
                 tool_used = result.get("tool_used", "none")
                 sources = result.get("sources", [])
 
-                # Output guardrail
+                
                 cleaned_answer, warnings = check_output(raw_answer, tool_used)
                 response = format_response(cleaned_answer, sources, tool_used, warnings)
 
-                # Display answer
+               
                 st.markdown(cleaned_answer)
 
-                # Display metadata
+                
                 col1, col2 = st.columns(2)
                 with col1:
                     tool_colors = {"web_search": "🌐", "rag_search": "📄", "none": "🧠"}
@@ -159,7 +159,7 @@ if query := st.chat_input("Ask me anything..."):
                         for url in sources:
                             st.markdown(f"- {url}")
 
-                # Save to history
+                
                 st.session_state.chat_history.append(
                     result["messages"][-1]
                 )
@@ -170,4 +170,5 @@ if query := st.chat_input("Ask me anything..."):
                 })
 
             except Exception as e:
+
                 st.error(f"Agent error: {str(e)}")
