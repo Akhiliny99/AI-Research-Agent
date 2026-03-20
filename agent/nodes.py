@@ -7,7 +7,7 @@ from langchain_core.messages import SystemMessage, HumanMessage, AIMessage
 from agent.tools import tools, web_search_tool, rag_search
 from agent.memory import AgentState
 
-# ── LLM setup ────────────────────────────────────────────────
+
 llm = ChatGroq(
     model="llama-3.1-8b-instant",
     api_key=os.getenv("GROQ_API_KEY"),
@@ -28,7 +28,7 @@ Decision rules:
 - Always be concise and factual
 """
 
-# ── Agent node (decides what to do) ──────────────────────────
+
 def agent_node(state: AgentState) -> AgentState:
     """Main agent that decides whether to use a tool or answer directly."""
     messages = [SystemMessage(content=SYSTEM_PROMPT)] + state["messages"]
@@ -36,7 +36,7 @@ def agent_node(state: AgentState) -> AgentState:
     return {"messages": [response]}
 
 
-# ── Tool executor node ────────────────────────────────────────
+
 def tool_node(state: AgentState) -> AgentState:
     """Executes whichever tool the agent selected."""
     from langchain_core.messages import ToolMessage
@@ -52,7 +52,7 @@ def tool_node(state: AgentState) -> AgentState:
 
         if tool_name == "web_search":
             raw = web_search_tool.invoke(tool_args)
-            # Extract readable content from Tavily response
+            
             if isinstance(raw, dict) and "results" in raw:
                 content = "\n\n".join([
                     f"[{r['title']}]\n{r['content']}\nURL: {r['url']}"
@@ -79,7 +79,7 @@ def tool_node(state: AgentState) -> AgentState:
     }
 
 
-# ── Synthesizer node ──────────────────────────────────────────
+
 def synthesizer_node(state: AgentState) -> AgentState:
     """Takes tool results and produces a clean final answer."""
     synth_prompt = """Based on the research above, provide a clear and concise answer.
@@ -100,11 +100,12 @@ def synthesizer_node(state: AgentState) -> AgentState:
     }
 
 
-# ── Router: should we call a tool or are we done? ─────────────
+
 def should_use_tool(state: AgentState) -> str:
     """Decides next step after agent node."""
     last_message = state["messages"][-1]
 
     if hasattr(last_message, "tool_calls") and last_message.tool_calls:
         return "use_tool"
+
     return "synthesize"
