@@ -17,7 +17,7 @@ web_search_tool = TavilySearch(
     description="Search the web for current information on any topic."
 )
 
-# ── RAG Tool ─────────────────────────────────────────────────
+
 embeddings = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
 )
@@ -86,4 +86,5 @@ def rag_search(query: str) -> str:
 
 
 # ── Tool list exported to agent ───────────────────────────────
+
 tools = [web_search_tool, rag_search]
