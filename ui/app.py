@@ -16,7 +16,7 @@ st.set_page_config(
 
 
 st.title("🔍 AI Research Agent")
-st.caption("Powered by LangGraph · LLaMA 3.1 · Groq · Tavily · FAISS")
+
 
 st.markdown("---")
 
